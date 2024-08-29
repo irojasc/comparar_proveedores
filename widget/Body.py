@@ -21,9 +21,10 @@ class Body(QBoxLayout):
         #1st row
         ########################
         column0 = QVBoxLayout()
-        form1 =  FormList([], "light-red", limit_selected = 1, max_height=200)
+        self.form1 =  FormList([], "light-red", limit_selected = 1, max_height=200)
+        self.form1.qPushButton.clicked.connect(lambda x: print("Hola Mundo"))
         #
-        column0.addWidget(form1)
+        column0.addWidget(self.form1)
         ########################
         layout1.addLayout(column0)
         ########################
@@ -33,26 +34,26 @@ class Body(QBoxLayout):
         #column 1, row 2
         ########################
         column1 = QVBoxLayout()
-        qlist1 = ListWidget(data1, "light-red", limit_selected = 1)
+        self.qlist1 = ListWidget(data1, "light-red", limit_selected = 1)
         label1 = QLabel('Buscar por editorial:')
         self.nameEdit1 = QLineEdit()
         #event
-        self.nameEdit1.textChanged.connect(lambda x: qlist1.update_list(x))
+        self.nameEdit1.textChanged.connect(lambda x: self.qlist1.update_list(x))
         #
         #
         column1.addWidget(label1)
         column1.addWidget(self.nameEdit1)
-        column1.addWidget(qlist1)
+        column1.addWidget(self.qlist1)
         ########################
         #column 2, row 2
         ########################
         column2 = QVBoxLayout()
-        #widget3: qlist3
-        qlist3 = ListWidget(data2, "light-green", limit_selected = 20, max_height=None)
+        #widget3: self.qlist3
+        self.qlist3 = ListWidget(data2, "light-green", limit_selected = 20, max_height=None)
         ########
         #widget2
         button2 = QPushButton('Vincular')
-        button2.clicked.connect(lambda x: form1.addItem2Data1(qlist1.selectedItems, qlist3.selectedItems))
+        button2.clicked.connect(self.vincular)
         #
         #show informative QMessagebox pqyt5?
         column2.addWidget(button2)
@@ -64,11 +65,11 @@ class Body(QBoxLayout):
         label3 = QLabel('Buscar por proveedor:')
         self.nameEdit3 = QLineEdit()
         #event
-        self.nameEdit3.textChanged.connect(lambda x: qlist3.update_list(x))
+        self.nameEdit3.textChanged.connect(lambda x: self.qlist3.update_list(x))
         #
         column3.addWidget(label3)
         column3.addWidget(self.nameEdit3)
-        column3.addWidget(qlist3)
+        column3.addWidget(self.qlist3)
         ########################
 
         layout2.addLayout(column1)
@@ -87,7 +88,12 @@ class Body(QBoxLayout):
         button21.clicked.connect(self.parent.accept)
 
     def vincular(self):
-        pass
+        if(self.form1.addItem2Data1(self.qlist1.getSelectedItems(), self.qlist3.getSelectedItems())):
+            self.qlist1.removeSelectedItems()
+            self.qlist1.unselectallItems(doUpdate=True)
+            self.qlist3.unselectallItems(doUpdate=True)
+
+        #remove specific item of list?
 
     
 

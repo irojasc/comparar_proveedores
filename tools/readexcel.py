@@ -10,4 +10,3 @@ def  read_excel_file(file_path, sheet_name, column: int = 0):
     for row in range(sheet.nrows):
         myList.append({"index": row, "content": f'{row}-{sheet.cell_value(row, column)}', "isSelected": False})
     return myList
-

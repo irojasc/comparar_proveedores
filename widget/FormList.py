@@ -11,14 +11,16 @@ class FormList(QWidget):
         self.setMaximumHeight(200)
         label0 = QLabel('Buscar relación editorial - proveedor:')
         self.nameEdit0 = QLineEdit()
-        # self.nameEdit0.textChanged.connect(lambda x: qlist0.update_list(x))
         self.qlist0 = ListWidget(data1, selected_color, limit_selected, max_height)
-        qPushButton =  QPushButton('Desvincular')
-        qPushButton.clicked.connect(lambda x: print("Hola Mundo"))
+        self.nameEdit0.textChanged.connect(lambda x: self.qlist0.update_list(x))
+        self.qPushButton =  QPushButton('Desvincular')
+
+        # qPushButton.clicked.connect(lambda x: print("Hola Mundo"))
+
         layout1 = QVBoxLayout()
         layout = QHBoxLayout()
         layout.addWidget(self.nameEdit0)
-        layout.addWidget(qPushButton)
+        layout.addWidget(self.qPushButton)
         layout1.addWidget(label0)
         layout1.addLayout(layout)
         layout1.addWidget(self.qlist0)
@@ -26,14 +28,18 @@ class FormList(QWidget):
 
     def addItem2Data1(self, leftList: list = [], rightList: list = []):
         if (bool(len(leftList)) and bool(len(rightList))):
-            pass
-            #aqui nos quedamos
-            # dictObj = {"Index": None, "Content": "hola" ,"isSelected": False}
+            matchString = leftList[0]["content"] + " * [" + '-'.join(list(map(lambda x: str(x['index']),rightList))) + "]"
+            tmpItem = {'index': leftList[0]['index'], 'content': matchString, 'isSelected': False}
+            self.qlist0.addItem2Data1(tmpItem)
+            return True
         else:
             # Create a message box
             QMessageBox.information(None, "Advertencia", "Debe seleccionar filas")
+            return False
         # self.qlist0.addItem2Data1()
         #give me params of QMessageBox.information?
+
+    
 
 
 

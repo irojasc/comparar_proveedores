@@ -28,8 +28,6 @@ class ListWidget(QWidget):
         #crea listwidget
         self.listWidget = QListWidget()
 
-        # Add some more items to the list
-        self.update_list()
         # obtiene parametros r, g, b
         # color = self.listWidget.item(1).background().color()
         # print(color.red(), color.green(), color.blue())
@@ -45,22 +43,25 @@ class ListWidget(QWidget):
         layout.addWidget(self.listWidget)
         layout.addWidget(self.selectedLabel)
         self.setLayout(layout)
+        # Add some more items to the list
+        self.update_list()
 
 
     def onItemClicked(self, item):
         #obtiene index
         index = self.listWidget.row(item)
         item = self.listWidget.item(index)
-        #buscar en bd
-        findedItem = next((item_data1 for item_data1 in self.data1 if int(item_data1['content'].split('-')[0]) == int(item.text().split('-')[0])), False)
-        
-        #Parte logica principal
+        findedItem = self.findItemByItemWidget(item)
+        # Parte logica principal
         if(self.isSelectedItem(findedItem)):
             self.unselectEvent(item, findedItem) 
         else:
             self.selectEvent(item, findedItem)
-        self.updateSelectedLabel()
         
+    def findItemByItemWidget(self,item):
+        #buscar en bd
+        return next((item_data1 for item_data1 in self.data1 if int(item_data1['content'].split('-')[0]) == int(item.text().split('-')[0])), False)
+    
     def updateSelectedLabel(self):
         self.selectedLabel.setText(f'{str(self.getSelectedQty())} seleccionados, total: {str(len(self.data1))}')
     
@@ -68,28 +69,36 @@ class ListWidget(QWidget):
         self.data1[findedItem['index']]['isSelected'] = False
         item.setBackground(colors['light-white'])
         self.listWidget.addItem(item)
-        # self.selectedItems = 
-        self.selectedItems = list(filter(lambda x: x['isSelected'] == True, self.data1)).copy()
+        self.getSelectedItems()
 
     def selectEvent(self, item, findedItem):
         #verifica que los seleccionados superan el limite
         if (self.selected_limit != 1):
             if (self.getSelectedQty() < self.selected_limit) and (bool(findedItem)):
                 self.data1[findedItem['index']]['isSelected'] = True
-                self.selectedItems = list(filter(lambda x: x['isSelected'] == True, self.data1)).copy()
+                self.getSelectedItems()
                 self.update_list()
         elif(self.selected_limit == 1):
-            tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False} for x in self.data1 if True]
-            self.data1.clear()
-            self.data1 = tmp_data.copy()
-            self.data1[findedItem['index']]['isSelected'] = True
-            self.selectedItems = list(filter(lambda x: x['isSelected'] == True, self.data1)).copy()
+            self.unselectallItems()
+            indexes = [i for i, d in enumerate(self.data1) if d['index'] == findedItem['index']]
+            self.data1[indexes[0]]['isSelected'] = True
+            self.getSelectedItems()
             self.update_list()
+        
         # print(f"Item clicked: {item.text()}")
+        #find index of dictiories list?
 
     def isSelectedItem(self, findedItem):
         return findedItem['isSelected']
 
+    def getSelectedIndexesItems(self):
+        indexes = [i for i, d in enumerate(self.data1) if d['isSelected'] == True]
+        return indexes
+    
+    def getSelectedItems(self):
+        self.selectedItems = list(filter(lambda x: x['isSelected'] == True, self.data1)).copy()
+        return self.selectedItems
+    
     def getSelectedQty(self):
         return reduce(lambda x, y: x + int(y['isSelected']),  self.data1, 0)
     
@@ -102,10 +111,23 @@ class ListWidget(QWidget):
             item = QListWidgetItem(value["content"])
             bool(value["isSelected"]) and (item.setBackground(self.selectedColor))
             self.listWidget.addItem(item)
+        self.updateSelectedLabel()
 
     def addItem2Data1(self, data: dict = None):
         self.data1.append(data)
         self.update_list()
+
+    def unselectallItems(self, doUpdate: bool = False):
+        tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False} for x in self.data1 if True]
+        self.data1.clear()
+        self.data1 = tmp_data.copy()
+        doUpdate and self.update_list()
+
+    def removeSelectedItems(self):
+        indexes = self.getSelectedIndexesItems()
+        if(bool(len(indexes))):
+            self.data1.pop(indexes[0])
+            self.update_list()
     
 
 # if __name__ == '__main__':
