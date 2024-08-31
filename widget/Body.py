@@ -22,7 +22,7 @@ class Body(QBoxLayout):
         ########################
         column0 = QVBoxLayout()
         self.form1 =  FormList([], "light-red", limit_selected = 1, max_height=200)
-        self.form1.qPushButton.clicked.connect(lambda x: print("Hola Mundo"))
+        self.form1.qPushButton.clicked.connect(self.desvincular)
         #
         column0.addWidget(self.form1)
         ########################
@@ -92,9 +92,11 @@ class Body(QBoxLayout):
             self.qlist1.removeSelectedItems()
             self.qlist1.unselectallItems(doUpdate=True)
             self.qlist3.unselectallItems(doUpdate=True)
-
-        #remove specific item of list?
-
     
+    def desvincular(self):
+        if(bool(self.form1.qlist0.getSelectedQty())):
+            selected_item = self.form1.qlist0.getSelectedItems()[0]
+            self.qlist1.addItem2Data1({'index': selected_item['index'], 'content': selected_item['content_root'], 'isSelected': False, 'content_root': 'xxx'})
+            self.form1.qlist0.removeSelectedItems()
 
-
+    #import QtCore?

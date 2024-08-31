@@ -1,48 +1,60 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
-from tools.readexcel import read_excel_file
-from widget.Body import Body
+from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QLabel, QLineEdit, QPushButton, QMessageBox
+from program import MyDialog
 
-class MyDialog(QDialog):
+class LoginForm(QWidget):
     def __init__(self):
         super().__init__()
-        self.leftList = read_excel_file('./proveedores.xls','Editoriales', column=0)    
-        self.rightList = read_excel_file('./proveedores.xls','Proveedores', column=1)
-        self.initUI(self.leftList, self.rightList)
-    
-    # data1:proveedores
-    def initUI(self, data1, data2):
-        self.setWindowTitle('Actualizador de Proveedores')
-        self.setGeometry(300, 300, 1100, 600)
-        self.setMinimumHeight(400)
-        mainLayout = Body(data1, data2, self)
-        self.setLayout(mainLayout)
-        # Center the dialog
-        self.center()
+        self.initUI()
 
+    def initUI(self):
+        self.setGeometry(300, 300, 220, 155)
+        self.setWindowTitle('Genesis')
+
+        label_username = QLabel('Usuario', self)
+        label_username.move(20, 10)
+
+        self.line_username = QLineEdit(self)
+        self.line_username.move(20, 30)
+        self.line_username.setFixedWidth(175)
+
+        label_password = QLabel('Contraseña', self)
+        label_password.move(20, 60)
+
+        self.line_password = QLineEdit(self)
+        self.line_password.setEchoMode(QLineEdit.Password)
+        self.line_password.move(20, 80)
+        self.line_password.setFixedWidth(175)
+
+        btn_login = QPushButton('Ingresar', self)
+        btn_login.move(70, 115)
+        btn_login.clicked.connect(self.check_password)
+        self.center()
+        self.show()
+
+    def check_password(self):
+        username = self.line_username.text()
+        password = self.line_password.text()
+
+        if username == 'admin01' and password == 'chuspa':
+            dialog = MyDialog()
+            self.setVisible(False)
+            if dialog.exec_() == QDialog.Accepted:
+                print(f"Hello, {dialog.getName()}!")
+            else:
+                print("Dialog cancelled")
+        else:
+            QMessageBox.critical(self, 'Error', 'Invalid username or password')
+    
     def center(self):
         qr = self.frameGeometry()
         cp = self.screen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def getName(self):
-        # return self.nameEdit1.text()
-        return "Hola Mundo"
-
+        #prevent escape exit qdialog?
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
-    dialog = MyDialog()
-    if dialog.exec_() == QDialog.Accepted:
-        print(f"Hello, {dialog.getName()}!")
-    else:
-        print("Dialog cancelled")
-
-    # sys.exit(app.exec_())
-
-
-
-
-   
+    ex = LoginForm()
+    sys.exit(app.exec_())

@@ -29,7 +29,7 @@ class FormList(QWidget):
     def addItem2Data1(self, leftList: list = [], rightList: list = []):
         if (bool(len(leftList)) and bool(len(rightList))):
             matchString = leftList[0]["content"] + " * [" + '-'.join(list(map(lambda x: str(x['index']),rightList))) + "]"
-            tmpItem = {'index': leftList[0]['index'], 'content': matchString, 'isSelected': False}
+            tmpItem = {'index': leftList[0]['index'], 'content': matchString, 'isSelected': False, 'content_root': leftList[0]['content']}
             self.qlist0.addItem2Data1(tmpItem)
             return True
         else:
@@ -37,12 +37,4 @@ class FormList(QWidget):
             QMessageBox.information(None, "Advertencia", "Debe seleccionar filas")
             return False
         # self.qlist0.addItem2Data1()
-        #give me params of QMessageBox.information?
-
-    
-
-
-
-
-        #on click event pyqt5 button?
 

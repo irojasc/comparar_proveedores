@@ -66,10 +66,13 @@ class ListWidget(QWidget):
         self.selectedLabel.setText(f'{str(self.getSelectedQty())} seleccionados, total: {str(len(self.data1))}')
     
     def unselectEvent(self, item, findedItem):
-        self.data1[findedItem['index']]['isSelected'] = False
+        indexes = self.getSelectedIndexesItems()
+        self.data1[indexes[0]]['isSelected'] = False
         item.setBackground(colors['light-white'])
         self.listWidget.addItem(item)
+        #actualiza los items seleccionados
         self.getSelectedItems()
+        self.updateSelectedLabel()
 
     def selectEvent(self, item, findedItem):
         #verifica que los seleccionados superan el limite
@@ -107,6 +110,10 @@ class ListWidget(QWidget):
             self.pattern = pattern
         self.listWidget.clear()
         # Add some more items to the list
+        ##ordena lista
+        newlist = sorted(self.data1, key=lambda x: x['index'])
+        self.data1 = newlist.copy()
+        ##
         for index, value in enumerate(list(filter(lambda x: self.pattern.lower() in x["content"].lower(), self.data1))):
             item = QListWidgetItem(value["content"])
             bool(value["isSelected"]) and (item.setBackground(self.selectedColor))
@@ -118,7 +125,7 @@ class ListWidget(QWidget):
         self.update_list()
 
     def unselectallItems(self, doUpdate: bool = False):
-        tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False} for x in self.data1 if True]
+        tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False, 'content_root': x['content_root']} for x in self.data1 if True]
         self.data1.clear()
         self.data1 = tmp_data.copy()
         doUpdate and self.update_list()
@@ -128,10 +135,3 @@ class ListWidget(QWidget):
         if(bool(len(indexes))):
             self.data1.pop(indexes[0])
             self.update_list()
-    
-
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     window = MainWindow()
-#     window.show()
-#     sys.exit(app.exec_())
