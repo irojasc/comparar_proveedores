@@ -1,14 +1,16 @@
 import sys
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QApplication, QDialog
 from tools.readexcel import read_excel_file
 from widget.Body import Body
+from utils.company import get_all_suppliers
 
 class MyDialog(QDialog):
-    def __init__(self):
+    def __init__(self, data_auth):
         super().__init__()
         self.leftList = read_excel_file('./proveedores.xls','Editoriales', column=0)    
-        self.rightList = read_excel_file('./proveedores.xls','Proveedores', column=1)
+        self.rightList = get_all_suppliers(data_auth=data_auth)
+        # self.rightList = read_excel_file('./proveedores.xls','Proveedores', column=1)
         self.initUI(self.leftList, self.rightList)
     
     # data1:proveedores
