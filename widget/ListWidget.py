@@ -12,7 +12,7 @@ colors = {
 }
 
 class ListWidget(QWidget):
-    def __init__(self, data1, selected_color="light-red", limit_selected: int = 1, max_height: int = None):
+    def __init__(self, data1, selected_color="light-red", limit_selected: int = 1, max_height: int = None, isTopWidget=False):
         super().__init__()
         self.data1 = data1
         self.selected_limit = limit_selected
@@ -21,6 +21,7 @@ class ListWidget(QWidget):
         self.selectedItems = []
         self.pattern = ''
         self.initUI()
+        self.isTopWidget=isTopWidget
 
     def initUI(self):
         self.setGeometry(300, 300, 300, 200)
@@ -59,15 +60,19 @@ class ListWidget(QWidget):
             self.selectEvent(item, findedItem)
         
     def findItemByItemWidget(self,item):
+        if self.isTopWidget:
+            return next((item_data1 for item_data1 in self.data1 if item_data1['content'].split('*')[0][1:].strip() == item.text().split('*')[0][1:].strip()), False)
         #buscar en bd
         return next((item_data1 for item_data1 in self.data1 if int(item_data1['content'].split('-')[0]) == int(item.text().split('-')[0])), False)
+        
     
     def updateSelectedLabel(self):
         self.selectedLabel.setText(f'{str(self.getSelectedQty())} seleccionados, total: {str(len(self.data1))}')
     
     def unselectEvent(self, item, findedItem):
         indexes = self.getSelectedIndexesItems()
-        self.data1[indexes[0]]['isSelected'] = False
+        # self.data1[indexes[0]]['isSelected'] = False
+        self.data1[findedItem['index']]['isSelected'] = False
         item.setBackground(colors['light-white'])
         self.listWidget.addItem(item)
         #actualiza los items seleccionados
@@ -78,7 +83,10 @@ class ListWidget(QWidget):
         #verifica que los seleccionados superan el limite
         if (self.selected_limit != 1):
             if (self.getSelectedQty() < self.selected_limit) and (bool(findedItem)):
-                self.data1[findedItem['index']]['isSelected'] = True
+                if (self.data1[findedItem['index']]['isSelected'] == True):
+                    self.data1[findedItem['index']]['isSelected'] = False
+                else:
+                    self.data1[findedItem['index']]['isSelected'] = True
                 self.getSelectedItems()
                 self.update_list()
         elif(self.selected_limit == 1):
@@ -105,13 +113,16 @@ class ListWidget(QWidget):
     def getSelectedQty(self):
         return reduce(lambda x, y: x + int(y['isSelected']),  self.data1, 0)
     
-    def update_list(self, pattern: str = None):
+    def update_list(self, pattern: str = None, newList: list = []):
         if (isinstance(pattern, str)):
             self.pattern = pattern
         self.listWidget.clear()
         # Add some more items to the list
         ##ordena lista
-        newlist = sorted(self.data1, key=lambda x: x['index'])
+        if (bool(newList)):
+            newlist = sorted(newList, key=lambda x: x['index'])
+        else:
+            newlist = sorted(self.data1, key=lambda x: x['index'])
         self.data1 = newlist.copy()
         ##
         for index, value in enumerate(list(filter(lambda x: self.pattern.lower() in x["content"].lower(), self.data1))):
@@ -125,7 +136,10 @@ class ListWidget(QWidget):
         self.update_list()
 
     def unselectallItems(self, doUpdate: bool = False):
-        tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False, 'content_root': x['content_root']} for x in self.data1 if True]
+        if self.isTopWidget:
+            tmp_data = [{'index': x['index'], 'secondary': x['secondary'], 'content': x['content'], 'isSelected': False} for x in self.data1 if True]
+        else:
+            tmp_data = [{'index': x['index'], 'content': x['content'], 'isSelected': False, 'content_root': x['content_root']} for x in self.data1 if True]
         self.data1.clear()
         self.data1 = tmp_data.copy()
         doUpdate and self.update_list()
@@ -135,3 +149,10 @@ class ListWidget(QWidget):
         if(bool(len(indexes))):
             self.data1.pop(indexes[0])
             self.update_list()
+
+    def getData1Length(self):
+        return len(self.data1)
+    
+    def getLastIndex(self):
+        maxIndex = max(list(map(lambda x: x['index'], self.data1)))
+        return maxIndex

@@ -1,10 +1,12 @@
 import os
+from os.path import join, dirname
 import requests
 from urllib3 import encode_multipart_formdata
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 #load env variables
-load_dotenv(dotenv_path='./.env', verbose= True)
+dotenv_path_ = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path='./.env', override= True)
 URL_DEV = os.getenv("URL_DEV")
 #####
 
@@ -21,7 +23,8 @@ class Login:
         return self.data_auth
 
     def __exit__(self, *args):
-        print("Llega a esta parte")
+        print("Session terminada")
+        session.close()
         pass
         # self.file.close()
 
@@ -32,12 +35,14 @@ class Login:
         headers = {"Content-Type": content_type}
         inner_url = f'{URL_DEV}/Login/token'
         try:
-            x = self.session.post(inner_url, data=request_body, headers=headers)
+            # x = self.session.post(inner_url, data=request_body, headers=headers)
+            x = requests.post(inner_url, data=request_body, headers=headers, timeout=30)
             if (x.status_code == 200):
                 self.data_auth = x.json()
             else:
                 self.data_auth = {}
         except Exception as e:
             print(f"Error: {e}")
+            self.data_auth = None
 
     

@@ -39,15 +39,18 @@ class LoginForm(QWidget):
         username = self.line_username.text()
         password = self.line_password.text()
         with Login(username, password) as data_auth:
-            if bool(data_auth):
-                dialog = MyDialog(data_auth)
-                self.setVisible(False)
-                if dialog.exec_() == QDialog.Accepted:
-                    print(f"Hello, {dialog.getName()}!")
+            if data_auth is not None:
+                if bool(data_auth):
+                    dialog = MyDialog(data_auth)
+                    self.setVisible(False)
+                    if dialog.exec_() == QDialog.Accepted:
+                        print(f"Hello, {dialog.getName()}!")
+                    else:
+                        print("Dialog cancelled")
                 else:
-                    print("Dialog cancelled")
+                    QMessageBox.critical(self, 'Error', 'Usuario o contraseña invalida')
             else:
-                QMessageBox.critical(self, 'Error', 'Invalid username or password')
+                QMessageBox.critical(self, 'Error', 'Problemas con el servidor')
     
     def center(self):
         qr = self.frameGeometry()

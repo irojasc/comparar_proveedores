@@ -3,19 +3,19 @@ import requests
 from dotenv import load_dotenv
 
 #load env variables
-load_dotenv(dotenv_path='./.env', verbose= True)
+load_dotenv(dotenv_path='./.env', override=True)
 URL_DEV = os.getenv("URL_DEV")
-#####
 
+#####
 def get_all_suppliers(data_auth):
     try:
         endpoint = f'{URL_DEV}/company/supplier'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
-        response = requests.get(endpoint, headers=headers)
+        response = requests.get(endpoint, headers=headers, timeout=5)
         returned = list(map(get_all_suppliers_format, enumerate(response.json())))
         return returned
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error at get_all_suppliers: {e}')
         return []
 
 ##formats
@@ -27,3 +27,13 @@ def get_all_suppliers_format(value):
         'isSelected': False,
         'content_root': 'xxxxx'
     }
+###
+def create_new_company(payload, data_auth):
+    try:
+        endpoint = f'{URL_DEV}/company/newcompany'
+        headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
+        response = requests.post(endpoint, json=payload, headers=headers, timeout=30)
+        return response.status_code
+    except Exception as e:
+        print(f'Error at get_all_suppliers: {e}')
+        return 304
