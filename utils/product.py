@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 
 #load env variables
 load_dotenv(dotenv_path='./.env', override=True)
-URL_DEV = os.getenv("URL_DEV")
+ADMIN_URL_GENESIS = os.getenv("ADMIN_URL_GENESIS")
 #####
 
 def get_all_publishers(data_auth):
     try:
-        endpoint = f'{URL_DEV}/linker/companypublisher/nopair'
+        endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher/nopair'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.get(endpoint, headers=headers, timeout=5)
         returned = list(map(get_all_suppliers_format, enumerate(response.json())))

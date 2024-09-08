@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 
 #load env variables
 load_dotenv(dotenv_path='./.env', override=True)
-URL_DEV = os.getenv("URL_DEV")
+ADMIN_URL_GENESIS = os.getenv("ADMIN_URL_GENESIS")
 #####
 
 def get_all_company_publisher(data_auth):
     try:
-        endpoint = f'{URL_DEV}/linker/companypublisher/pair'
+        endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher/pair'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.get(endpoint, headers=headers, timeout=5)
         returned = get_company_publisher_format(response.json())
@@ -31,7 +31,7 @@ def get_company_publisher_format(data: dict):
 
 def post_company_publisher(payload,data_auth):
     try:
-        endpoint = f'{URL_DEV}/linker/companypublisher'
+        endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.post(endpoint, json={'data': payload}, headers=headers, timeout=30)
         # returned = get_company_publisher_format(response.json())
@@ -42,7 +42,7 @@ def post_company_publisher(payload,data_auth):
 
 def delete_company_publisher(payload,data_auth):
     try:
-        endpoint = f'{URL_DEV}/linker/companypublisher'
+        endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.delete(endpoint, json={'data': payload}, headers=headers, timeout=30)
         return response.status_code

@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 
 #load env variables
 load_dotenv(dotenv_path='./.env', override=True)
-URL_DEV = os.getenv("URL_DEV")
+ADMIN_URL_GENESIS = os.getenv("ADMIN_URL_GENESIS")
 
 #####
 def get_all_suppliers(data_auth):
     try:
-        endpoint = f'{URL_DEV}/company/supplier'
+        endpoint = f'{ADMIN_URL_GENESIS}/company/supplier'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.get(endpoint, headers=headers, timeout=5)
         returned = list(map(get_all_suppliers_format, enumerate(response.json())))
@@ -30,7 +30,7 @@ def get_all_suppliers_format(value):
 ###
 def create_new_company(payload, data_auth):
     try:
-        endpoint = f'{URL_DEV}/company/newcompany'
+        endpoint = f'{ADMIN_URL_GENESIS}/company/newcompany'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
         response = requests.post(endpoint, json=payload, headers=headers, timeout=30)
         return response.status_code

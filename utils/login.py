@@ -7,7 +7,7 @@ from dotenv import load_dotenv, find_dotenv
 #load env variables
 dotenv_path_ = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path='./.env', override= True)
-URL_DEV = os.getenv("URL_DEV")
+ADMIN_URL_GENESIS = os.getenv("ADMIN_URL_GENESIS")
 #####
 
 session = requests.Session()
@@ -33,7 +33,7 @@ class Login:
                 'password':  password}
         request_body, content_type = encode_multipart_formdata(data)
         headers = {"Content-Type": content_type}
-        inner_url = f'{URL_DEV}/Login/token'
+        inner_url = f'{ADMIN_URL_GENESIS}/Login/token'
         try:
             # x = self.session.post(inner_url, data=request_body, headers=headers)
             x = requests.post(inner_url, data=request_body, headers=headers, timeout=30)
