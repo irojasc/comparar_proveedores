@@ -11,7 +11,7 @@ def get_all_publishers(data_auth):
     try:
         endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher/nopair'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
-        response = requests.get(endpoint, headers=headers, timeout=5)
+        response = requests.get(endpoint, headers=headers, timeout=30)
         returned = list(map(get_all_suppliers_format, enumerate(response.json())))
         return returned
     except Exception as e:

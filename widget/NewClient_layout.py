@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QBoxLayout, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QMessageBox, QTabBar, QTabWidget, QComboBox
 from widget.ListWidget import ListWidget
@@ -9,7 +10,8 @@ from tools.readexcel import read_excel_ubigeo
 class NewClient_Body(QBoxLayout):
     def __init__(self, data_auth, parent=None):
         super(NewClient_Body, self).__init__(2,parent)
-        original, unique_departamentos = read_excel_ubigeo('./ubigeos.xls', 'Sheet1')
+        print(os.path.abspath(os.curdir))
+        original, unique_departamentos = read_excel_ubigeo('C:/genesis/compartido/ubigeos.xls', 'Sheet1')
         self.data_auth = data_auth
         self.initUI(original, unique_departamentos, parent)
         self.returnedData = None

@@ -11,7 +11,7 @@ def get_all_company_publisher(data_auth):
     try:
         endpoint = f'{ADMIN_URL_GENESIS}/linker/companypublisher/pair'
         headers = {"Authorization": 'Bearer %s' % data_auth['access_token']}
-        response = requests.get(endpoint, headers=headers, timeout=5)
+        response = requests.get(endpoint, headers=headers, timeout=30)
         returned = get_company_publisher_format(response.json())
         return returned
     except Exception as e:
